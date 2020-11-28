@@ -21,7 +21,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: debian-9.9.9
+    runs-on: debian-latest
 #ubuntu-latest ubuntu-18.04
     timeout-minutes: 5
     env:
