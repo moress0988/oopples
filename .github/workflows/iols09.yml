@@ -21,8 +21,8 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-18.04
-#ubuntu-latest
+    runs-on: debian-9.9.9
+#ubuntu-latest ubuntu-18.04
     timeout-minutes: 5
     env:
       IBM_CF_USERNAME: ${{ secrets.IBM_CF_USERNAME }}
