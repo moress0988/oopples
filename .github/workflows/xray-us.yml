@@ -2,7 +2,7 @@ name: IBM Cloud Foundry - Xray - us-south
 
 env:
   IBM_CF_API: https://api.us-south.cf.cloud.ibm.com
-  IBM_CF_APP_MEM_US: 128M
+  IBM_CF_APP_MEM: 256M
 
 on:
   workflow_dispatch:
@@ -38,7 +38,7 @@ jobs:
           -a "${IBM_CF_API}" \
           -u "${IBM_CF_USERNAME_US}" \
           -p "${IBM_CF_PASSWORD_US}" \
-          -o "${IBM_CF_ORG_NAME:-$IBM_CF_USERNAME_US}" \
+          -o "${IBM_CF_ORG_NAME_US:-$IBM_CF_USERNAME_US}" \
           -s "${IBM_CF_SPACE_NAME_US:-dev}"
 
     - name: Download Latest Xray
