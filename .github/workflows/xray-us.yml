@@ -15,11 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
-      IBM_CF_USERNAME: ${{ secrets.IBM_CF_USERNAME }}
-      IBM_CF_PASSWORD: ${{ secrets.IBM_CF_PASSWORD }}
+      IBM_CF_USERNAME_US: ${{ secrets.IBM_CF_USERNAME }}
+      IBM_CF_PASSWORD_US: ${{ secrets.IBM_CF_PASSWORD }}
       IBM_CF_ORG_NAME: ${{ secrets.IBM_CF_ORG_NAME }}
       IBM_CF_SPACE_NAME: ${{ secrets.IBM_CF_SPACE_NAME }}
-      IBM_CF_APP_NAME: ${{ secrets.IBM_CF_APP_NAME }}
+      IBM_CF_APP_NAME_US: ${{ secrets.IBM_CF_APP_NAME }}
       Xray_UUID: ${{ secrets.Xray_UUID }}
 #      Xray_WS_PATH_VMESS: ${{ secrets.Xray_WS_PATH_VMESS }}
       Xray_WS_PATH_VLESS: ${{ secrets.Xray_WS_PATH_VLESS }}
@@ -36,9 +36,9 @@ jobs:
       run: |
         cf login \
           -a "${IBM_CF_API}" \
-          -u "${IBM_CF_USERNAME}" \
-          -p "${IBM_CF_PASSWORD}" \
-          -o "${IBM_CF_ORG_NAME:-$IBM_CF_USERNAME}" \
+          -u "${IBM_CF_USERNAME_US}" \
+          -p "${IBM_CF_PASSWORD_US}" \
+          -o "${IBM_CF_ORG_NAME:-$IBM_CF_USERNAME_US}" \
           -s "${IBM_CF_SPACE_NAME:-dev}"
 
     - name: Download Latest Xray
@@ -102,10 +102,10 @@ jobs:
       run: |
         cat << EOF > manifest.yml
         applications:
-        - name: ${IBM_CF_APP_NAME}
+        - name: ${IBM_CF_APP_NAME_US}
           memory: ${IBM_CF_APP_MEM}
           random-route: true
-          command: base64 -d config > config.json; ./${IBM_CF_APP_NAME} run -c config.json
+          command: base64 -d config > config.json; ./${IBM_CF_APP_NAME_US} run -c config.json
           buildpacks:
           - binary_buildpack
         EOF
