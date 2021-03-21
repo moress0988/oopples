@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
   #repository_dispatch:
   schedule:
-    - cron: 42 21 * * 6
+    - cron: 22 12 * * 2
 
 jobs:
   deploy:
@@ -21,7 +21,7 @@ jobs:
       IBM_CF_SPACE_NAME: ${{ secrets.IBM_CF_SPACE_NAME }}
       IBM_CF_APP_NAME: ${{ secrets.IBM_CF_APP_NAME }}
       Xray_UUID: ${{ secrets.Xray_UUID }}
-      Xray_WS_PATH_VMESS: ${{ secrets.Xray_WS_PATH_VMESS }}
+#      Xray_WS_PATH_VMESS: ${{ secrets.Xray_WS_PATH_VMESS }}
       Xray_WS_PATH_VLESS: ${{ secrets.Xray_WS_PATH_VLESS }}
 
     steps:
@@ -50,55 +50,6 @@ jobs:
         chmod -v 755 xray
         ./xray version
         mv xray ${IBM_CF_APP_NAME}
-
-    - name: Generate Xray Config File (VMess)
-      if: ${{ env.Xray_WS_PATH_VMESS }}
-      run: |
-        base64 << EOF > config
-        {
-          "log": {
-            "access": "none",
-            "loglevel": "error"
-          },
-          "dns": {
-            "servers": [
-              {
-                "address": "https+local://1.0.0.1/dns-query",
-                "port": 443
-              }
-            ]
-          },
-          "inbounds": [
-            {
-              "port": 8080,
-              "protocol": "vmess",
-              "settings": {
-                "clients": [
-                  {
-                    "id": "${Xray_UUID}",
-                    "alterId": 0
-                  }
-                ]
-              },
-              "streamSettings": {
-                "network":"ws",
-                "wsSettings": {
-                  "path": "${Xray_WS_PATH_VMESS}"
-                }
-              }
-            }
-          ],
-          "outbounds": [
-            {
-              "protocol": "freedom",
-              "settings": {
-                "domainStrategy": "UseIP"
-              }
-            }
-          ]
-        }
-        EOF
-
     - name: Generate Xray Config File (VLESS)
       if: ${{ env.Xray_WS_PATH_VLESS }}
       run: |
