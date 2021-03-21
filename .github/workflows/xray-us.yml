@@ -17,8 +17,8 @@ jobs:
     env:
       IBM_CF_USERNAME_US: ${{ secrets.IBM_CF_USERNAME }}
       IBM_CF_PASSWORD_US: ${{ secrets.IBM_CF_PASSWORD }}
-      IBM_CF_ORG_NAME: ${{ secrets.IBM_CF_ORG_NAME }}
-      IBM_CF_SPACE_NAME: ${{ secrets.IBM_CF_SPACE_NAME }}
+      IBM_CF_ORG_NAME_US: ${{ secrets.IBM_CF_ORG_NAME }}
+      IBM_CF_SPACE_NAME_US: ${{ secrets.IBM_CF_SPACE_NAME }}
       IBM_CF_APP_NAME_US: ${{ secrets.IBM_CF_APP_NAME }}
       Xray_UUID: ${{ secrets.Xray_UUID }}
 #      Xray_WS_PATH_VMESS: ${{ secrets.Xray_WS_PATH_VMESS }}
@@ -39,7 +39,7 @@ jobs:
           -u "${IBM_CF_USERNAME_US}" \
           -p "${IBM_CF_PASSWORD_US}" \
           -o "${IBM_CF_ORG_NAME:-$IBM_CF_USERNAME_US}" \
-          -s "${IBM_CF_SPACE_NAME:-dev}"
+          -s "${IBM_CF_SPACE_NAME_US:-dev}"
 
     - name: Download Latest Xray
       run: |
@@ -49,7 +49,7 @@ jobs:
         rm Xray-linux-64.zip
         chmod -v 755 xray
         ./xray version
-        mv xray ${IBM_CF_APP_NAME}
+        mv xray ${IBM_CF_APP_NAME_US}
     - name: Generate Xray Config File (VLESS)
       if: ${{ env.Xray_WS_PATH_VLESS }}
       run: |
@@ -103,7 +103,7 @@ jobs:
         cat << EOF > manifest.yml
         applications:
         - name: ${IBM_CF_APP_NAME_US}
-          memory: ${IBM_CF_APP_MEM}
+          memory: ${IBM_CF_APP_NAME_US}
           random-route: true
           command: base64 -d config > config.json; ./${IBM_CF_APP_NAME_US} run -c config.json
           buildpacks:
