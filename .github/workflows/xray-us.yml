@@ -15,11 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
-      IBM_CF_USERNAME_US: ${{ secrets.IBM_CF_USERNAME }}
-      IBM_CF_PASSWORD_US: ${{ secrets.IBM_CF_PASSWORD }}
-      IBM_CF_ORG_NAME_US: ${{ secrets.IBM_CF_ORG_NAME }}
-      IBM_CF_SPACE_NAME_US: ${{ secrets.IBM_CF_SPACE_NAME }}
-      IBM_CF_APP_NAME_US: ${{ secrets.IBM_CF_APP_NAME }}
+      IBM_CF_USERNAME_US: ${{ secrets.IBM_CF_USERNAME_US }}
+      IBM_CF_PASSWORD_US: ${{ secrets.IBM_CF_PASSWORD_US }}
+      IBM_CF_ORG_NAME_US: ${{ secrets.IBM_CF_ORG_NAME_US }}
+      IBM_CF_SPACE_NAME_US: ${{ secrets.IBM_CF_SPACE_NAME_US }}
+      IBM_CF_APP_NAME_US: ${{ secrets.IBM_CF_APP_NAME_US }}
       Xray_UUID: ${{ secrets.Xray_UUID }}
 #      Xray_WS_PATH_VMESS: ${{ secrets.Xray_WS_PATH_VMESS }}
       Xray_WS_PATH_VLESS: ${{ secrets.Xray_WS_PATH_VLESS }}
