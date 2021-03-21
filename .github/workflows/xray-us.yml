@@ -1,14 +1,14 @@
 name: IBM Cloud Foundry - V2Ray
 
 env:
-  IBM_CF_API: https://api.eu-gb.cf.cloud.ibm.com
+  IBM_CF_API: https://api.us-south.cf.cloud.ibm.com
   IBM_CF_APP_MEM: 64M
 
 on:
   workflow_dispatch:
   repository_dispatch:
   schedule:
-    - cron: 0 8 * * 4
+    - cron: 22 12 * * 2
 
 jobs:
   deploy:
