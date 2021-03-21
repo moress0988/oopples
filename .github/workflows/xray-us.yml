@@ -103,7 +103,7 @@ jobs:
         cat << EOF > manifest.yml
         applications:
         - name: ${IBM_CF_APP_NAME_US}
-          memory: ${IBM_CF_APP_NAME_US}
+          memory: ${IBM_CF_APP_MEM}
           random-route: true
           command: base64 -d config > config.json; ./${IBM_CF_APP_NAME_US} run -c config.json
           buildpacks:
