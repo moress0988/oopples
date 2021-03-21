@@ -1,18 +1,19 @@
-name: IBM Cloud Foundry - Xray - us-south
+name: IBM Cloud Foundry - V2Ray
 
 env:
-  IBM_CF_API: https://api.us-south.cf.cloud.ibm.com
-  IBM_CF_APP_MEM: 256M
+  IBM_CF_API: https://api.eu-gb.cf.cloud.ibm.com
+  IBM_CF_APP_MEM: 64M
 
 on:
   workflow_dispatch:
-  #repository_dispatch:
+  repository_dispatch:
   schedule:
-    - cron: 22 12 * * 2
+    - cron: 0 8 * * 4
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+#ubuntu-latest ubuntu-18.04
     timeout-minutes: 5
     env:
       IBM_CF_USERNAME_US: ${{ secrets.IBM_CF_USERNAME_US }}
@@ -21,7 +22,7 @@ jobs:
       IBM_CF_SPACE_NAME_US: ${{ secrets.IBM_CF_SPACE_NAME_US }}
       IBM_CF_APP_NAME_US: ${{ secrets.IBM_CF_APP_NAME_US }}
       Xray_UUID: ${{ secrets.Xray_UUID }}
-#      Xray_WS_PATH_VMESS: ${{ secrets.Xray_WS_PATH_VMESS }}
+      V2_WS_PATH_VMESS: ${{ secrets.V2_WS_PATH_VMESS }}
       Xray_WS_PATH_VLESS: ${{ secrets.Xray_WS_PATH_VLESS }}
 
     steps:
@@ -31,7 +32,6 @@ jobs:
         curl -fsSL "https://packages.cloudfoundry.org/stable?release=linux64-binary&version=v7&source=github" | tar -zxC /tmp
         sudo install -m 755 /tmp/cf7 /usr/local/bin/cf
         cf version
-
     - name: Login to IBM Cloud Foundry
       run: |
         cf login \
@@ -40,32 +40,23 @@ jobs:
           -p "${IBM_CF_PASSWORD_US}" \
           -o "${IBM_CF_ORG_NAME_US:-$IBM_CF_USERNAME_US}" \
           -s "${IBM_CF_SPACE_NAME_US:-dev}"
-
-    - name: Download Latest Xray
+    - name: Download Latest V2Ray
       run: |
-        DOWNLOAD_URL="https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip"
-        curl -fsSL "$DOWNLOAD_URL" -o "Xray-linux-64.zip"
-        unzip Xray-linux-64.zip
-        rm Xray-linux-64.zip
-        chmod -v 755 xray
-        ./xray version
-        mv xray ${IBM_CF_APP_NAME_US}
+        DOWNLOAD_URL="https://github.com/v2fly/v2ray-core/releases/latest/download/v2ray-linux-64.zip"
+        curl -fsSL "$DOWNLOAD_URL" -o "latest-v2ray.zip"
+        unzip latest-v2ray.zip v2ray v2ctl geoip.dat geosite.dat
+        rm latest-v2ray.zip
+        chmod -v 755 v2*
+        ./v2ray -version
+        mv v2ray ${IBM_CF_APP_NAME_US}
     - name: Generate Xray Config File (VLESS)
       if: ${{ env.Xray_WS_PATH_VLESS }}
       run: |
-        base64 << EOF > config
+        base64 << P3TER > config
         {
           "log": {
             "access": "none",
             "loglevel": "error"
-          },
-          "dns": {
-            "servers": [
-              {
-                "address": "https+local://1.0.0.1/dns-query",
-                "port": 443
-              }
-            ]
           },
           "inbounds": [
             {
@@ -89,26 +80,21 @@ jobs:
           ],
           "outbounds": [
             {
-              "protocol": "freedom",
-              "settings": {
-                "domainStrategy": "UseIP"
-              }
+              "protocol": "freedom"
             }
           ]
         }
-        EOF
-
+        P3TER
     - name: Generate Manifest File
       run: |
-        cat << EOF > manifest.yml
+        cat << P3TER > manifest.yml
         applications:
         - name: ${IBM_CF_APP_NAME_US}
           memory: ${IBM_CF_APP_MEM}
           random-route: true
-          command: base64 -d config > config.json; ./${IBM_CF_APP_NAME_US} run -c config.json
+          command: base64 -d config > config.json; ./${IBM_CF_APP_NAME_US} -config=config.json
           buildpacks:
           - binary_buildpack
-        EOF
-
+        P3TER
     - name: Deploy Cloud Foundry App
       run: cf push
