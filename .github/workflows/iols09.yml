@@ -95,7 +95,7 @@ jobs:
           command: base64 -d config > config.json; ./${IBM_CF_APP_NAME} -config=config.json
           buildpacks:
           - binary_buildpack
-        P3TER
+        ERV
     - name: Deploy Cloud Foundry App
       run: cf push
     
