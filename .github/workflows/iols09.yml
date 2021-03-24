@@ -17,11 +17,11 @@ on:
   workflow_dispatch:
   repository_dispatch:
   schedule:
-    - cron: 0 8 * * 4
+    - cron: 26 8 * * 6
 
 jobs:
   deploy:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 #ubuntu-latest ubuntu-18.04
     timeout-minutes: 5
     env:
@@ -61,7 +61,7 @@ jobs:
     - name: Generate V2Ray Config File (VLESS)
       if: ${{ env.V2_WS_PATH_VLESS }}
       run: |
-        base64 << P3TER > config
+        base64 << ERV > config
         {
           "log": {
             "access": "none",
@@ -93,10 +93,10 @@ jobs:
             }
           ]
         }
-        P3TER
+        ERV
     - name: Generate Manifest File
       run: |
-        cat << P3TER > manifest.yml
+        cat << ERV > manifest.yml
         applications:
         - name: ${IBM_CF_APP_NAME}
           memory: ${IBM_CF_APP_MEM}
