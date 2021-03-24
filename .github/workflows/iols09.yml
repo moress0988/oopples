@@ -1,19 +1,11 @@
-name: IBM Cloud Foundry - V2Ray
-
-env:
-  IBM_CF_API: https://api.eu-gb.cf.cloud.ibm.com
-  IBM_CF_APP_MEM: 64M
-
-on:
-  workflow_dispatch:
+:
   repository_dispatch:
-  schedule:
-    - cron: 26 8 * * 6
+#  schedule:
+#    - cron: 0 21 * * 5
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-#ubuntu-latest ubuntu-18.04
     timeout-minutes: 5
     env:
       IBM_CF_USERNAME: ${{ secrets.IBM_CF_USERNAME }}
@@ -21,7 +13,7 @@ jobs:
       IBM_CF_ORG_NAME: ${{ secrets.IBM_CF_ORG_NAME }}
       IBM_CF_SPACE_NAME: ${{ secrets.IBM_CF_SPACE_NAME }}
       IBM_CF_APP_NAME: ${{ secrets.IBM_CF_APP_NAME }}
-      V2_UUID: ${{ secrets.P5_UUID }}
+      V2_UUID: ${{ secrets.V2_UUID }}
       V2_WS_PATH_VMESS: ${{ secrets.V2_WS_PATH_VMESS }}
       V2_WS_PATH_VLESS: ${{ secrets.V2_WS_PATH_VLESS }}
 
@@ -49,10 +41,46 @@ jobs:
         chmod -v 755 v2*
         ./v2ray -version
         mv v2ray ${IBM_CF_APP_NAME}
+    - name: Generate V2Ray Config File (VMess)
+      if: ${{ env.V2_WS_PATH_VMESS }}
+      run: |
+        base64 << P3TERX > config
+        {
+          "log": {
+            "access": "none",
+            "loglevel": "error"
+          },
+          "inbounds": [
+            {
+              "port": 8080,
+              "protocol": "vmess",
+              "settings": {
+                "clients": [
+                  {
+                    "id": "${V2_UUID}",
+                    "alterId": 64
+                  }
+                ]
+              },
+              "streamSettings": {
+                "network":"ws",
+                "wsSettings": {
+                  "path": "${V2_WS_PATH_VMESS}"
+                }
+              }
+            }
+          ],
+          "outbounds": [
+            {
+              "protocol": "freedom"
+            }
+          ]
+        }
+        P3TERX
     - name: Generate V2Ray Config File (VLESS)
       if: ${{ env.V2_WS_PATH_VLESS }}
       run: |
-        base64 << ERV > config
+        base64 << P3TERX > config
         {
           "log": {
             "access": "none",
@@ -84,10 +112,10 @@ jobs:
             }
           ]
         }
-        ERV
+        P3TERX
     - name: Generate Manifest File
       run: |
-        cat << ERV > manifest.yml
+        cat << P3TERX > manifest.yml
         applications:
         - name: ${IBM_CF_APP_NAME}
           memory: ${IBM_CF_APP_MEM}
@@ -95,7 +123,6 @@ jobs:
           command: base64 -d config > config.json; ./${IBM_CF_APP_NAME} -config=config.json
           buildpacks:
           - binary_buildpack
-        ERV
+        P3TERX
     - name: Deploy Cloud Foundry App
       run: cf push
-    
